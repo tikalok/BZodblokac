@@ -1,0 +1,10 @@
+﻿{
+    "name": "BZ Odblokač kač",
+    "version": "0.1.0",
+    "manifest_version": 2,
+    "description": "",
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["contentscript.js"]
+    }]
+}
