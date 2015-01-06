@@ -1,4 +1,28 @@
-﻿var empty = '';
+﻿var tok = '';
+var toka = document.body.innerHTML.match(/name="birdztoken" value="\S*"/g);
+if(toka){
+tok = toka[0].replace('name="birdztoken" value="', '');
+tok = tok.replace('"', '');
+}
+
+if (tok.length != 0){
+   chrome.storage.local.set({'birdztoken': tok}, function() {
+        });
+}
+else
+{
+  chrome.runtime.sendMessage({method:'getToken'},function(birdztoken){
+    tok = birdztoken;
+    if(tok.length != 0)
+    {
+      modify();
+    }
+  });
+}
+
+function modify(){
+
+var empty = '';
 var av = document.body.innerHTML.match(/class="av"><img src="http\S*jpg"\s*alt="Ja"><strong>\S*<\/strong>/g);
 var ss1 = /class="av"><img src="http/g,
     ss2 = 'http';
@@ -41,12 +65,14 @@ var str3 = '" alt="2540900001414937718" class="avatar"></div>';
 str2 = str2.concat(str3);
 var str4 = '<div class="ccomment"><strong class="nick">'
 str4 = str4.concat(nickname);
-str4 = str4.concat('</strong><span class="desc">, napíš koment:</span></div>');
+str4 = str4.concat('</strong><span class="desc">, napíš koment:</span>');
 str2 = str2.concat(str4);
 
 var strf = '<form action="http://www.birdz.sk/';
 strf = strf.concat(typ);
-strf = strf.concat('/komentovat" id="komentovat" method="post" accept-charset="utf-8"><div style="display:none"><input type="hidden" name="birdztoken" value="66b4c84af093d91de7a41187aaa98dbf"></div>');
+strf = strf.concat('/komentovat" id="komentovat" method="post" accept-charset="utf-8"><div style="display:none"><input type="hidden" name="birdztoken" value="');
+strf = strf.concat(tok);
+strf = strf.concat('"></div>');
 str2 = str2.concat(strf);
 
 var stri1 = '<input type="hidden" name="linka" value="';
@@ -78,6 +104,8 @@ str2 = str2.concat('</form>');
 str2 = str2.concat('<div class="komentujem n"><div class="birdzloader"></div><span class="desc">Posielam koment, šup šup dáta idú svetom…</span></div>');
 
 str2 = str2.concat("<script>\n/*\n$(function()\n{\n$('#komentovat').submit(function()\n{var form = $(this);\nconsole.log('ok');\n$.ajax('/nastenka/komentovat',{\ntype: 'POST',\ndata: form.serialize(),\nsuccess: function(data) {\n},\ndataType: 'JSON',\n});\n$('#komentovat').hide();\n$('.komentujem').fadeIn(400);\n});\n});\n*/\n</script>");
-str2 = str2.concat('</div>');
+str2 = str2.concat('</div>\n</div>');
 
 document.body.innerHTML = document.body.innerHTML.replace(str1, str2);
+
+}
